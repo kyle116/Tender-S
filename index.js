@@ -78,6 +78,20 @@ app.route('/users/:id')
     })
   })
 
+  // =====login routes
+  app.post('/authenticate', (req, res) => {
+    User.findOne({email: req.body.email}, '+password', (err, user) => {
+      if(!user || (user && !user.validPassword(req.body.password))){
+      return res.json({success: false, message: "incorrect email or password entry."})
+    }
+    const userData = user.toObject()
+    delete userData.password
+    const token = jwt.sign(userData, process.env.SECRET)
+    res.json({success: true, message: "Logged in successfully, great success!", token})
+    })
+  })
+
+
 
 
 app.listen(PORT, () => {
