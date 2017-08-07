@@ -49,7 +49,7 @@ app.use(bodyParser.json());
     res.json({message: 'heellllllo'})
   });
 
-  //
+  //routes for all users
   app.route('/users')
     .get((req, res) =>{
       User.find({}, (err, users) =>{
@@ -62,6 +62,21 @@ app.use(bodyParser.json());
       })
     })
 
+//  individual user ROUTES
+app.route('/users/:id')
+  .get((req,res) => {
+    User.findById(req.params.id, (err, foundUser) => {
+      res.json(foundUser)
+    })
+  })
+  .patch((req, res) => {
+    User.findById(req.params.id, (err, updatedUser) => {
+      Object.assign(updatedUser, req.body)
+      updatedUser.save((err, updatedUser) => {
+        res.json({message: "User updated, so great.", user: updatedUser})
+      })
+    })
+  })
 
 
 
