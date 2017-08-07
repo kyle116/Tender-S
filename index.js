@@ -10,7 +10,8 @@ const
   cors = require('cors'),
   PORT = process.env.PORT || 3000,
   token = process.env.TOKEN,
-  client = yelp.client(token)
+  client = yelp.client(token),
+  User = require('./models/User')
 
 
 //=============Connect to Mongo======
@@ -41,12 +42,28 @@ app.use(bodyParser.json());
   //   console.log(e);
   // });
 
-//  ==========ROUTES========
+  //  ==========ROUTES========
 
 
-app.get('/', (req,res) =>{
-  res.json({message: 'heellllllo'})
-})
+  app.get('/', (req,res) =>{
+    res.json({message: 'heellllllo'})
+  });
+
+  //
+  app.route('/users')
+    .get((req, res) =>{
+      User.find({}, (err, users) =>{
+        res.json(users)
+      })
+    })
+    .post((req, res) => {
+      User.create(req.body, (err, user) =>{
+        res.json({message: "GREAT SUCCESS", user})
+      })
+    })
+
+
+
 
 app.listen(PORT, () => {
   console.log(`server is litening on port ${PORT}`)
