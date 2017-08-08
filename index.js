@@ -8,7 +8,7 @@ const
   bodyParser = require('body-parser'),
   jwt = require('jsonwebtoken'),
   cors = require('cors'),
-  PORT = process.env.PORT || 3000,
+  PORT = process.env.PORT || 3001,
   token = process.env.TOKEN,
   client = yelp.client(token),
   User = require('./models/User')
@@ -28,19 +28,25 @@ app.use(bodyParser.json());
 
 
 // =================API===============
-  client.search({
-    term :'restaurants',
-    location: 'los angeles, ca'
-  }).then(response => {
-    // console.log(response.jsonBody)
-  }).catch(e => {
-    // console.log(e)
-  });
-  // client.business('electric-owl-los-angeles').then(response => {
-  //   console.log(response.jsonBody.photos);
-  // }).catch(e => {
-  //   console.log(e);
-  // });
+  // const businessId
+  app.get('/yelp', (req, res) => {
+    client.search({
+      term :'restaurants',
+      location: 'los angeles, ca'
+    }).then(response => {
+      client.business(response.jsonBody.businesses[Math.floor((Math.random() * (response.jsonBody.businesses.length -1)))].id).then(resp => {
+        res.json(resp.jsonBody)
+        console.log(resp.jsonBody)
+      }).catch(e => {
+        console.log(e);
+      });
+    }).catch(e => {
+      console.log(e)
+    })
+});
+  // setTimeout({console.log(businessId)}, 4000)
+
+
 
   //  ==========ROUTES========
 
@@ -58,7 +64,7 @@ app.use(bodyParser.json());
     })
     .post((req, res) => {
       User.create(req.body, (err, user) =>{
-        res.json({message: "GREAT SUCCESS", user})
+        res.json({success: true, message: "GREAT SUCCESS", user})
       })
     })
 
@@ -73,7 +79,7 @@ app.route('/users/:id')
     User.findById(req.params.id, (err, updatedUser) => {
       Object.assign(updatedUser, req.body)
       updatedUser.save((err, updatedUser) => {
-        res.json({message: "User updated, so great.", user: updatedUser})
+        res.json({success: true, message: "User updated, so great.", user: updatedUser})
       })
     })
   })
