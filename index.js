@@ -45,11 +45,37 @@ app.use(bodyParser.json());
     })
 });
   // setTimeout({console.log(businessId)}, 4000)
-app.post('/matches', (req, res) => {
-  Business.create(req.body, (err, business) => {
-    res.json({success: true, message: "BUSINESS SUCCESS", business})
+app.route('/:user_id/matches')
+  .post((req, res) => {
+    User.findById(req.params.user_id, (err, user)=>{
+      Business.create(req.body, (err, business) => {
+        console.log('SAVED');
+        user.businesses.push(business)
+        user.save((err, user)=>{
+          res.json({success: true, message: "BUSINESS SUCCESS", business})
+        })
+      })
+    })
   })
-})
+  .get((req, res) => {
+    User.findById(req.params.user_id).populate("businesses").exec((err, user) => {
+      res.json(user)
+    })
+  })
+
+
+// app.post('/:user_id/hates', (req, res) => {
+//   User.findById(req.params.user_id, (err, user)=>{
+//     Business.create(req.body, (err, business) => {
+//       console.log('SAVED');
+//       user.hates.push(business)
+//       user.save((err, user)=>{
+//         res.json({success: true, message: "BUSINESS SUCCESS", business})
+//       })
+//     })
+//   })
+//
+// })
 
 
   //  ==========ROUTES========
