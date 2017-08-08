@@ -11,8 +11,8 @@ const
   PORT = process.env.PORT || 3001,
   token = process.env.TOKEN,
   client = yelp.client(token),
-  User = require('./models/User')
-
+  User = require('./models/User'),
+  Business = require('./models/Business')
 
 //=============Connect to Mongo======
 const mongoUrl = (process.env.MONGO_URL || 'mongodb://localhost/tenderDB')
@@ -35,6 +35,17 @@ app.use(bodyParser.json());
       location: 'los angeles, ca'
     }).then(response => {
       client.business(response.jsonBody.businesses[Math.floor((Math.random() * (response.jsonBody.businesses.length -1)))].id).then(resp => {
+        Business.create({
+          yelpID: resp.jsonBody.id,
+          name: resp.jsonBody.name,
+          address: resp.jsonBody.location.address1,
+          city: resp.jsonBody.location.city,
+          state: resp.jsonBody.location.state,
+          zip_code: resp.jsonBody.location.zip_code,
+          rating: resp.jsonBody.rating,
+          url: resp.jsonBody.url,
+          images: resp.jsonBody.photos
+        })
         res.json(resp.jsonBody)
         console.log(resp.jsonBody)
       }).catch(e => {

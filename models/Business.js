@@ -9,7 +9,7 @@ const
     zip_code: String,
     rating: Number,
     url: String,
-    images: [],
+    images: []
   })
 
 module.exports = mongoose.model('Business', businessSchema)
