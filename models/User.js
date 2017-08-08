@@ -5,7 +5,8 @@ const
   userSchema = new mongoose.Schema({
     name: String,
     email:String,
-    password: {type: String, select: false}
+    password: {type: String, select: false},
+    businesses: [{type: mongoose.Schema.Types.ObjectId, ref: 'Business'}] // *******
     // select: false used to prevent PW from
   });
 
