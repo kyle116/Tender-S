@@ -10,7 +10,6 @@ const
     rating: Number,
     url: String,
     images: [],
-    users: [{type: mongoose.Schema.Types.ObjectId, ref: 'User'}] // *******
   })
 
 module.exports = mongoose.model('Business', businessSchema)
