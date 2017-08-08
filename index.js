@@ -35,17 +35,6 @@ app.use(bodyParser.json());
       location: 'los angeles, ca'
     }).then(response => {
       client.business(response.jsonBody.businesses[Math.floor((Math.random() * (response.jsonBody.businesses.length -1)))].id).then(resp => {
-        Business.create({
-          yelpID: resp.jsonBody.id,
-          name: resp.jsonBody.name,
-          address: resp.jsonBody.location.address1,
-          city: resp.jsonBody.location.city,
-          state: resp.jsonBody.location.state,
-          zip_code: resp.jsonBody.location.zip_code,
-          rating: resp.jsonBody.rating,
-          url: resp.jsonBody.url,
-          images: resp.jsonBody.photos
-        })
         res.json(resp.jsonBody)
         console.log(resp.jsonBody)
       }).catch(e => {
@@ -56,7 +45,11 @@ app.use(bodyParser.json());
     })
 });
   // setTimeout({console.log(businessId)}, 4000)
-
+app.post('/matches', (req, res) => {
+  Business.create(req.body, (err, business) => {
+    res.json({success: true, message: "BUSINESS SUCCESS", business})
+  })
+})
 
 
   //  ==========ROUTES========
