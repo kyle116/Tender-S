@@ -11,8 +11,8 @@ const
   PORT = process.env.PORT || 3001,
   token = process.env.TOKEN,
   client = yelp.client(token),
-  User = require('./models/User')
-
+  User = require('./models/User'),
+  Business = require('./models/Business')
 
 //=============Connect to Mongo======
 const mongoUrl = (process.env.MONGO_URL || 'mongodb://localhost/tenderDB')
@@ -45,7 +45,37 @@ app.use(bodyParser.json());
     })
 });
   // setTimeout({console.log(businessId)}, 4000)
+app.route('/:user_id/matches')
+  .post((req, res) => {
+    User.findById(req.params.user_id, (err, user)=>{
+      Business.create(req.body, (err, business) => {
+        console.log('SAVED');
+        user.businesses.push(business)
+        user.save((err, user)=>{
+          res.json({success: true, message: "BUSINESS SUCCESS", business})
+        })
+      })
+    })
+  })
+  .get((req, res) => {
+    User.findById(req.params.user_id).populate("businesses").exec((err, user) => {
+      res.json(user)
+    })
+  })
 
+
+// app.post('/:user_id/hates', (req, res) => {
+//   User.findById(req.params.user_id, (err, user)=>{
+//     Business.create(req.body, (err, business) => {
+//       console.log('SAVED');
+//       user.hates.push(business)
+//       user.save((err, user)=>{
+//         res.json({success: true, message: "BUSINESS SUCCESS", business})
+//       })
+//     })
+//   })
+//
+// })
 
 
   //  ==========ROUTES========
