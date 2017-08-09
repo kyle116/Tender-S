@@ -78,7 +78,7 @@ app.post('/authenticate', (req, res) => {
   })
 })
 
-// app.use(verifyToken)
+app.use(verifyToken)
 // =================API===============
 // const businessId
 app.get('/yelp', (req, res) => {
@@ -129,6 +129,20 @@ app.route('/:user_id/matches')
   //
   // })
 
+function verifyToken(req, res, next) {
+  const token = req.headers['token']
+
+  if(token) {
+    jwt.verify(token, process.env.SECRET, (err, decoded) => {
+    if(err) return res.json({success: false, message: "Token could not be verified."})
+
+    req.user = decoded
+    next()
+    })
+  } else {
+    res.json({success: false, message: "No token provided. Access denied."})
+  }
+}
 
 app.listen(PORT, () => {
   console.log(`server is litening on port ${PORT}`)
