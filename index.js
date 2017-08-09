@@ -128,6 +128,25 @@ app.route('/:user_id/matches')
   //   })
   //
   // })
+  app.delete('/:user_id/:business_id/delete', (req, res) => {
+    Business.findById(req.params.business_id, (err, business) => {
+      User.findById(req.params.user_id).populate("businesses").exec((err, user) => {
+        // console.log(user.businesses[0].yelpID.toString());
+        // console.log(business.yelpID.toString());
+        for(i = 0; i < user.businesses.length; i++) {
+          if (user.businesses[i].yelpID.toString() === business.yelpID.toString()) {
+          user.businesses.splice(i, 1);
+          console.log('in the for loop');
+          break;       //<-- Uncomment  if only the first term has to be removed
+          }
+        }
+        user.save()
+        res.json(user)
+      })
+
+
+    })
+  })
 
 function verifyToken(req, res, next) {
   const token = req.headers['token']
