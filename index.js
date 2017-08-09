@@ -135,9 +135,9 @@ app.route('/:user_id/matches')
         // console.log(business.yelpID.toString());
         for(i = 0; i < user.businesses.length; i++) {
           if (user.businesses[i].yelpID.toString() === business.yelpID.toString()) {
-          user.businesses.splice(i, 1);
+          user.businesses.splice(i, 1)
           console.log('in the for loop');
-          break;       //<-- Uncomment  if only the first term has to be removed
+          break
           }
         }
         user.save()
