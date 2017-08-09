@@ -80,15 +80,28 @@ app.post('/authenticate', (req, res) => {
 
 app.use(verifyToken)
 // =================API===============
-// const businessId
+var businessCount;
+
 app.get('/yelp', (req, res) => {
   client.search({
     term :'restaurants',
     location: 'los angeles, ca'
   }).then(response => {
+    console.log(response.jsonBody.total);
+    businessCount = response.jsonBody.total
+    if(businessCount >= 1000) {
+      businessCount = 999
+    }
+    console.log(Math.floor((Math.random() * businessCount)));
+  })
+  client.search({
+    term :'restaurants',
+    location: 'los angeles, ca',
+    offset: Math.floor((Math.random() * businessCount))
+  }).then(response => {
     client.business(response.jsonBody.businesses[Math.floor((Math.random() * (response.jsonBody.businesses.length -1)))].id).then(resp => {
       res.json(resp.jsonBody)
-      console.log(resp.jsonBody)
+      // console.log(resp.jsonBody)
     }).catch(e => {
       console.log(e);
     });
