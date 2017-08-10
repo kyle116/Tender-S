@@ -83,10 +83,11 @@ app.use(verifyToken)
 // =================API===============
 var businessCount;
 
-app.get('/yelp', (req, res) => {
+app.get('/yelp/:location', (req, res) => {
+  console.log('req.body', req.params.location);
   client.search({
     term :'restaurants',
-    location: 'los angeles, ca'
+    location: req.params.location
   }).then(response => {
     console.log(response.jsonBody.total);
     businessCount = response.jsonBody.total
@@ -98,13 +99,13 @@ app.get('/yelp', (req, res) => {
 
     client.search({
       term :'restaurants',
-      location: 'los angeles, ca',
+      location: req.params.location,
       offset: Math.floor((Math.random() * businessCount))
       // limit: 999
     }).then(response => {
       client.business(response.jsonBody.businesses[Math.floor((Math.random() * (response.jsonBody.businesses.length -1)))].id).then(resp => {
         res.json(resp.jsonBody)
-        // console.log(resp.jsonBody)
+        console.log(resp.jsonBody)
       }).catch(e => {
         console.log(e);
       });
