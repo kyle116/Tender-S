@@ -60,7 +60,8 @@ app.route('/users/:id')
     User.findById(req.params.id, (err, updatedUser) => {
       Object.assign(updatedUser, req.body)
       updatedUser.save((err, updatedUser) => {
-        res.json({success: true, message: "User updated, so great.", user: updatedUser})
+        const token = jwt.sign(updatedUser, process.env.SECRET)
+        res.json({success: true, message: "User updated, so great.", user: updatedUser, token})
       })
     })
   })
@@ -93,20 +94,23 @@ app.get('/yelp', (req, res) => {
       businessCount = 999
     }
     console.log(Math.floor((Math.random() * businessCount)));
-  })
-  client.search({
-    term :'restaurants',
-    location: 'los angeles, ca',
-    offset: Math.floor((Math.random() * businessCount))
-  }).then(response => {
-    client.business(response.jsonBody.businesses[Math.floor((Math.random() * (response.jsonBody.businesses.length -1)))].id).then(resp => {
-      res.json(resp.jsonBody)
-      // console.log(resp.jsonBody)
+
+
+    client.search({
+      term :'restaurants',
+      location: 'los angeles, ca',
+      offset: Math.floor((Math.random() * businessCount))
+      // limit: 999
+    }).then(response => {
+      client.business(response.jsonBody.businesses[Math.floor((Math.random() * (response.jsonBody.businesses.length -1)))].id).then(resp => {
+        res.json(resp.jsonBody)
+        // console.log(resp.jsonBody)
+      }).catch(e => {
+        console.log(e);
+      });
     }).catch(e => {
-      console.log(e);
-    });
-  }).catch(e => {
-    console.log(e)
+      console.log(e)
+    })
   })
 });
     // setTimeout({console.log(businessId)}, 4000)
