@@ -60,7 +60,7 @@ app.route('/users/:id')
     User.findById(req.params.id, (err, updatedUser) => {
       Object.assign(updatedUser, req.body)
       updatedUser.save((err, updatedUser) => {
-        const token = jwt.sign(updatedUser, process.env.SECRET)
+        const token = jwt.sign(updatedUser.toObject(), process.env.SECRET)
         res.json({success: true, message: "User updated, so great.", user: updatedUser, token})
       })
     })
