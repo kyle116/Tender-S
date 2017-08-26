@@ -14,14 +14,14 @@ const
   User = require('./models/User'),
   Business = require('./models/Business')
 
-//=============Connect to Mongo======
+//==========Connect to Mongo===========
 const mongoUrl = (process.env.MONGO_URL || 'mongodb://localhost/tenderDB')
 mongoose.connect(mongoUrl, (err) => {
   console.log(err || 'connected to MongoDB');
 });
 
 
-// ==========Setup Middleware
+// ==========Setup Middleware===========
 app.use(cors());
 app.use(logger('dev'));
 app.use(bodyParser.json());
@@ -84,28 +84,22 @@ app.use(verifyToken)
 var businessCount;
 
 app.get('/yelp/:location', (req, res) => {
-  console.log('req.body', req.params.location);
   client.search({
     term :'restaurants',
     location: req.params.location
   }).then(response => {
-    console.log(response.jsonBody.total);
     businessCount = response.jsonBody.total
     if(businessCount >= 1000) {
       businessCount = 999
     }
-    console.log(Math.floor((Math.random() * businessCount)));
-
 
     client.search({
       term :'restaurants',
       location: req.params.location,
       offset: Math.floor((Math.random() * businessCount))
-      // limit: 999
     }).then(response => {
       client.business(response.jsonBody.businesses[Math.floor((Math.random() * (response.jsonBody.businesses.length -1)))].id).then(resp => {
         res.json(resp.jsonBody)
-        console.log(resp.jsonBody)
       }).catch(e => {
         console.log(e);
       });
@@ -114,12 +108,11 @@ app.get('/yelp/:location', (req, res) => {
     })
   })
 });
-    // setTimeout({console.log(businessId)}, 4000)
+
 app.route('/:user_id/matches')
   .post((req, res) => {
     User.findById(req.params.user_id, (err, user)=>{
       Business.create(req.body, (err, business) => {
-        console.log('SAVED');
         user.businesses.push(business)
         user.save((err, user)=>{
           res.json({success: true, message: "BUSINESS SUCCESS", business})
@@ -133,28 +126,12 @@ app.route('/:user_id/matches')
     })
   })
 
-
-  // app.post('/:user_id/hates', (req, res) => {
-  //   User.findById(req.params.user_id, (err, user)=>{
-  //     Business.create(req.body, (err, business) => {
-  //       console.log('SAVED');
-  //       user.hates.push(business)
-  //       user.save((err, user)=>{
-  //         res.json({success: true, message: "BUSINESS SUCCESS", business})
-  //       })
-  //     })
-  //   })
-  //
-  // })
   app.delete('/:user_id/:business_id/delete', (req, res) => {
     Business.findById(req.params.business_id, (err, business) => {
       User.findById(req.params.user_id).populate("businesses").exec((err, user) => {
-        // console.log(user.businesses[0].yelpID.toString());
-        // console.log(business.yelpID.toString());
         for(i = 0; i < user.businesses.length; i++) {
           if (user.businesses[i].yelpID.toString() === business.yelpID.toString()) {
           user.businesses.splice(i, 1)
-          console.log('in the for loop');
           break
           }
         }
