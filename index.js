@@ -15,7 +15,7 @@ const
   Business = require('./models/Business')
 
 //==========Connect to Mongo===========
-const mongoUrl = (process.env.MONGO_URL || 'mongodb://localhost/tenderDB')
+const mongoUrl = (process.env.MONGO_URL)
 mongoose.connect(mongoUrl, (err) => {
   console.log(err || 'connected to MongoDB');
 });
